@@ -100,6 +100,15 @@ RUN sed -i '/\[www\]/a pm.status_path = /status' /usr/local/etc/php-fpm.d/zz-doc
 # Copy the application code and dependencies from the build stage
 COPY --from=builder /var/www /var/www
 
+#-- AREA UNDER TESTING
+# Copy the instantclient dir and setup instantclient for oci8
+#COPY ./instantclient_19_29 /opt/oracle 
+#RUN sudo sh -c "echo /opt/oracle/instantclient_19_29 > \ /etc/ld.so.conf.d/oracle-instantclient.conf" sudo ldconfig
+
+#RUN pecl install oci8 \
+#    && docker-php-ext-enable oci8 \
+#RUN composer require yajra/laravel-oci8:^12
+
 # Set working directory
 WORKDIR /var/www
 
