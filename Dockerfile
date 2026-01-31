@@ -4,9 +4,9 @@
 # --------------------------------------------------
 # Variables
 # --------------------------------------------------
-ENV ORACLE_HOME=/usr/lib/oracle/23/client64
-ENV LD_LIBRARY_PATH=/usr/lib/oracle/23/client64/lib
-ENV PATH=$PATH:/usr/lib/oracle/23/client64/bin
+#ENV ORACLE_HOME=/usr/lib/oracle/23/client64
+#ENV LD_LIBRARY_PATH=/usr/lib/oracle/23/client64/lib
+#ENV PATH=$PATH:/usr/lib/oracle/23/client64/bin
 ENV APP_DIR=/var/www/laravel
 
 
@@ -17,7 +17,7 @@ RUN dnf -y install oracle-instantclient-release-23ai-el9 && \
     dnf -y install \
         oracle-instantclient-basic \
         oracle-instantclient-devel \
-        oracle-instantclient-sqlplus && \
+#        oracle-instantclient-sqlplus && \
     rm -rf /var/cache/dnf
 
 
@@ -63,14 +63,18 @@ EOF
 # --------------------------------------------------
 RUN mkdir -p ${APP_DIR}
 WORKDIR ${APP_DIR}
-COPY . .
+VOLUME ${APP_DIR}
+#COPY . .
 
 
 # --------------------------------------------------
 # Permisos
 # --------------------------------------------------
-RUN chown -R nginx:nginx ${APP_DIR} && \
-    chmod -R 775 storage bootstrap/cache
+#RUN chown -R nginx:nginx ${APP_DIR} && \
+#    chmod -R 775 storage bootstrap/cache
+# ------------------------ Enviado a entrypoint ----
+
+
 
 # --------------------------------------------------
 # PHP-FPM runtime directory (FIX)
@@ -140,9 +144,12 @@ EOF
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost/ || exit 1
 
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ['/entrypoint.sh']
 
 # --------------------------------------------------
 # Expose + start
 # --------------------------------------------------
 EXPOSE 80
-CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
+#CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
